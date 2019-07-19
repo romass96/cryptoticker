@@ -43,21 +43,48 @@
 <table class="table">
     <thead class="thead-dark">
     <tr>
-        <th scope="col">№</th>
+        <th scope="col">Logo</th>
         <th scope="col">Short name</th>
         <th scope="col">Full name</th>
-        <th scope="col">Capitalization</th>
+        <th scope="col">Price, $</th>
+        <th scope="col">Capitalization, $</th>
+        <th scope="col">Circulation supply</th>
+        <th scope="col">Maximum supply</th>
+        <th scope="col">Day volume, $</th>
+        <th scope="col">Change 1 hour,%</th>
+        <th scope="col">Change 1 day,%</th>
+        <th scope="col">Change 1 week,%</th>
     </tr>
     </thead>
     <tbody>
         <tr th:if="${currencies.empty}">
-            <td colspan="4"> No Currencies Available </td>
+            <td colspan="6"> No Currencies Available </td>
         </tr>
         <tr th:each="currency : ${currencies}">
-            <td th:text="${currency.id}"></td>
+            <td>
+                <figure class="figure">
+                    <img th:src="${currency.logoUrl}" class="figure-img img-fluid rounded" alt="...">
+                </figure>
+            </td>
             <td th:text="${currency.shortName}"></td>
             <td th:text="${currency.fullName}"></td>
+            <td th:text="${currency.price}"></td>
             <td th:text="${currency.capitalization}"></td>
+            <td th:text="${currency.circulatingSupply}"></td>
+            <td th:text="${currency.maxSupply}"></td>
+            <td th:text="${currency.dayVolume}"></td>
+
+            <td>
+                <span th:classAppend="${currency.percentChange1h} >= 0 ? badge-success : badge-danger" class="badge" th:text="${currency.percentChange1h}"></span>
+            </td>
+
+            <td>
+                <span th:classAppend="${currency.percentChange24h} >= 0 ? badge-success : badge-danger" class="badge" th:text="${currency.percentChange24h}"></span>
+            </td>
+
+            <td>
+                <span th:classAppend="${currency.percentChange7d} >= 0 ? badge-success : badge-danger" class="badge" th:text="${currency.percentChange7d}"></span>
+            </td>
         </tr>
     </tbody>
 </table>

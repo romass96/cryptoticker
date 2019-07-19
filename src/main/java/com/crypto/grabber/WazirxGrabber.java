@@ -30,7 +30,6 @@ public class WazirxGrabber extends Grabber {
         super("https://api.wazirx.com/api/v2/tickers");
     }
 
-    @Override
 //    @Scheduled(fixedRate = 100000)
     public void execute() throws IOException {
         logger.info("Executing wazirx grabber");
@@ -48,31 +47,10 @@ public class WazirxGrabber extends Grabber {
 
     }
 
-    public List<CryptoCurrency> getAllAssets() throws IOException {
-        HttpEntity entity = getEntityWithHeaders();
-        HttpEntity<String> response = restTemplate.exchange(assetsUrl, HttpMethod.GET, entity, String.class);
-        JsonNode tree = objectMapper.readTree(response.getBody());
-        ObjectReader assetReader = objectMapper.readerFor(new TypeReference<List<Asset>>() {});
-        List<Asset> assets = assetReader.readValue(tree.get("assets"));
-        return assets.stream().map(asset -> {
-            CryptoCurrency cryptoCurrency = new CryptoCurrency();
-            cryptoCurrency.setFullName(asset.name);
-            cryptoCurrency.setShortName(asset.type.toUpperCase());
-            return cryptoCurrency;
-        }).collect(Collectors.toList());
-
-    }
-
     private TypeReference<Map<String, WazirxJsonResponse>> getTypeReference() {
         return new TypeReference<Map<String, WazirxJsonResponse>>() {};
     }
 
-    private HttpEntity getEntityWithHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-        return new HttpEntity(headers);
-    }
 }
 
 class WazirxJsonResponse {

@@ -19,11 +19,34 @@ public class CryptoCurrencyService {
     private CryptoCurrencyRepository cryptoCurrencyRepository;
 
     public List<CryptoCurrency> saveAll(List<CryptoCurrency> cryptoCurrencies) {
-      return Utils.iterableToList(cryptoCurrencyRepository.saveAll(cryptoCurrencies));
+        return Utils.iterableToList(cryptoCurrencyRepository.saveAll(cryptoCurrencies));
+    }
+
+    public CryptoCurrency save(CryptoCurrency cryptoCurrency) {
+        return cryptoCurrencyRepository.save(cryptoCurrency);
+    }
+
+    public List<CryptoCurrency> updateAll(List<CryptoCurrency> cryptoCurrencies) {
+        cryptoCurrencies.forEach(cryptoCurrency -> {
+            CryptoCurrency byShortName = findByShortName(cryptoCurrency.getShortName());
+            if (byShortName != null) {
+                cryptoCurrency.setId(byShortName.getId());
+            }
+            save(cryptoCurrency);
+        });
+        return findAll();
     }
 
     public List<CryptoCurrency> findAll() {
         return Utils.iterableToList(cryptoCurrencyRepository.findAll());
+    }
+
+    public CryptoCurrency findByShortName(String shortName) {
+        return findAll()
+                .stream()
+                .filter(cryptoCurrency -> cryptoCurrency.getShortName().equalsIgnoreCase(shortName))
+                .findAny()
+                .orElse(null);
     }
 
     public List<CryptoCurrency> getAllCryptoCurrencies() {
@@ -34,12 +57,12 @@ public class CryptoCurrencyService {
         return cryptoCurrencies;
     }
 
-    public CryptoCurrency findByShortName(String shortName) {
-        return getAllCryptoCurrencies()
-                .stream()
-                .filter(cryptoCurrency -> cryptoCurrency.getShortName().equalsIgnoreCase(shortName))
-                .findAny()
-                .orElse(null);
-    }
+//    public CryptoCurrency findByShortName(String shortName) {
+//        return getAllCryptoCurrencies()
+//                .stream()
+//                .filter(cryptoCurrency -> cryptoCurrency.getShortName().equalsIgnoreCase(shortName))
+//                .findAny()
+//                .orElse(null);
+//    }
 
 }
