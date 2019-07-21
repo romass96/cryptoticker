@@ -28,9 +28,9 @@ public class CryptoCurrencyService {
 
     public List<CryptoCurrency> updateAll(List<CryptoCurrency> cryptoCurrencies) {
         cryptoCurrencies.forEach(cryptoCurrency -> {
-            CryptoCurrency byShortName = findByShortName(cryptoCurrency.getShortName());
-            if (byShortName != null) {
-                cryptoCurrency.setId(byShortName.getId());
+            CryptoCurrency byId = findByCoinMarketCapId(cryptoCurrency.getCoinMarketCapId());
+            if (byId != null) {
+                cryptoCurrency.setId(byId.getId());
             }
             save(cryptoCurrency);
         });
@@ -42,11 +42,11 @@ public class CryptoCurrencyService {
     }
 
     public CryptoCurrency findByShortName(String shortName) {
-        return findAll()
-                .stream()
-                .filter(cryptoCurrency -> cryptoCurrency.getShortName().equalsIgnoreCase(shortName))
-                .findAny()
-                .orElse(null);
+        return cryptoCurrencyRepository.findByShortName(shortName);
+    }
+
+    public CryptoCurrency findByCoinMarketCapId(Long id) {
+        return cryptoCurrencyRepository.findByCoinMarketCapId(id);
     }
 
     public List<CryptoCurrency> getAllCryptoCurrencies() {

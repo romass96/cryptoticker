@@ -5,16 +5,16 @@ import java.lang.reflect.Method;
 
 @Entity
 @Table(name = "crypto_currencies")
-public class CryptoCurrency {
+public class CryptoCurrency extends PersistedObject{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "short_name", unique = true)
+    @Column(name = "short_name",updatable = false)
     private String shortName;
 
-    @Column(name = "full_name", unique = true)
+    @Column(name = "full_name", updatable = false)
     private String fullName;
 
     @Column(name = "max_supply")
@@ -47,6 +47,9 @@ public class CryptoCurrency {
 
     @Column(name = "logo_url")
     private String logoUrl;
+
+    @Column(name = "coin_market_cap_id")
+    private Long coinMarketCapId;
 
 
     public Long getId() {
@@ -153,27 +156,12 @@ public class CryptoCurrency {
         this.logoUrl = logoUrl;
     }
 
-    public void merge(CryptoCurrency source){
-        Method[] methods = this.getClass().getMethods();
+    public Long getCoinMarketCapId() {
+        return coinMarketCapId;
+    }
 
-        for(Method fromMethod: methods){
-            if(fromMethod.getDeclaringClass().equals(this.getClass())
-                    && fromMethod.getName().startsWith("get")){
-
-                String fromName = fromMethod.getName();
-                String toName = fromName.replace("get", "set");
-
-                try {
-                    Method toMetod = this.getClass().getMethod(toName, fromMethod.getReturnType());
-                    Object value = fromMethod.invoke(source, (Object[])null);
-                    if(value != null){
-                        toMetod.invoke(this, value);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    public void setCoinMarketCapId(Long coinMarketCapId) {
+        this.coinMarketCapId = coinMarketCapId;
     }
 
     @Override
@@ -192,6 +180,7 @@ public class CryptoCurrency {
                 ", percentChange7d=" + percentChange7d +
                 ", description='" + description + '\'' +
                 ", logoUrl='" + logoUrl + '\'' +
+                ", coinMarketCapId=" + coinMarketCapId +
                 '}';
     }
 }

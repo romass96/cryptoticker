@@ -8,14 +8,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.util.Collections;
-
 public class Grabber {
     protected static final Logger logger = LoggerFactory.getLogger(Grabber.class);
+    protected static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36";
 
     protected RestTemplate restTemplate = new RestTemplate();
-    protected ObjectMapper objectMapper = getObjectMapper();
     protected String tickerUrl;
 
     public Grabber() {
@@ -28,8 +25,8 @@ public class Grabber {
 
     protected HttpEntity getEntityWithHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("accept", MediaType.APPLICATION_JSON_VALUE);
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+        headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+        headers.add(HttpHeaders.USER_AGENT, USER_AGENT);
         return new HttpEntity(headers);
     }
 

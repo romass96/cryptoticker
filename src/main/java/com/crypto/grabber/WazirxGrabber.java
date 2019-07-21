@@ -1,27 +1,23 @@
 package com.crypto.grabber;
 
-import com.crypto.model.CryptoCurrency;
 import com.crypto.model.Ticker;
 import com.crypto.service.CryptoCurrencyService;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 public class WazirxGrabber extends Grabber {
-    private static final String assetsUrl = "https://api.wazirx.com/api/v2/market-status";
+    private static final String API_URL = "https://api.wazirx.com/api/v2/";
+    private static final String ASSETS_URL = API_URL + "market-status";
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private CryptoCurrencyService cryptoCurrencyService;

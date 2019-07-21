@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CryptoExchangeRepository extends CrudRepository<CryptoExchange, Long> {
-
+    CryptoExchange findByName(String name);
 
 }
