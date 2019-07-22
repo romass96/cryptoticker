@@ -1,6 +1,7 @@
 package com.crypto;
 
 import com.crypto.grabber.CoinMarketCapGrabber;
+import com.crypto.grabber.CoinStatsGrabber;
 import com.crypto.model.CryptoCurrency;
 import com.crypto.service.CryptoCurrencyService;
 import com.crypto.service.CryptoExchangeService;
@@ -20,6 +21,9 @@ public class Runner implements CommandLineRunner {
     private CoinMarketCapGrabber coinMarketCapGrabber;
 
     @Autowired
+    private CoinStatsGrabber coinStatsGrabber;
+
+    @Autowired
     private CryptoCurrencyService cryptoCurrencyService;
 
     @Autowired
@@ -28,7 +32,8 @@ public class Runner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 //        List<CryptoCurrency> currencyList = cryptoCurrencyService.updateAll(coinMarketCapGrabber.getAllLatestCryptoCurrencies());
-//        logger.info(currencyList.get(0).toString());
+        List<CryptoCurrency> currencyList = cryptoCurrencyService.updateAll(coinStatsGrabber.getAllCoins());
+        logger.info(currencyList.get(0).toString());
 
     }
 }

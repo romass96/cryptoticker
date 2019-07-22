@@ -16,8 +16,11 @@ public class CryptoCurrency extends PersistedObject{
     @Column(name = "name", updatable = false)
     private String name;
 
-    @Column(name = "max_supply")
-    private Long maxSupply;
+    @Column(name = "total_supply")
+    private Long totalSupply;
+
+    @Column(name = "available_supply")
+    private Long availableSupply;
 
     @Column(name = "circulating_supply")
     private Long circulatingSupply;
@@ -25,31 +28,48 @@ public class CryptoCurrency extends PersistedObject{
     @Column(name = "capitalization")
     private Double capitalization;
 
-    @Column(name = "price")
-    private Double price;
+    @Column(name = "price_usd")
+    private Double priceUSD;
+
+    @Column(name = "price_btc")
+    private Double priceBTC;
 
     @Column(name = "day_volume")
     private Double dayVolume;
 
-    @Column(name = "percent_change_1h")
-    private Double percentChange1h;
+    @Column(name = "price_change_1h")
+    private Double priceChange1h;
 
-    @Column(name = "percent_change_24h")
-    private Double percentChange24h;
+    @Column(name = "price_change_1d")
+    private Double priceChange1d;
 
-    @Column(name = "percent_change_7d")
-    private Double percentChange7d;
+    @Column(name = "price_change_1w")
+    private Double priceChange1w;
 
     @Column(name = "description")
     @Lob
     private String description;
 
-    @Column(name = "logo_url")
-    private String logoUrl;
+    @Column(name = "icon")
+    private String icon;
+
+    @Column(name = "website_url")
+    private String websiteUrl;
+
+    @Column(name = "reddit_url")
+    private String redditUrl;
+
+    @Column(name = "twitter_url")
+    private String twitterUrl;
 
     @Column(name = "coin_market_cap_id")
     private Long coinMarketCapId;
 
+    @Column(name = "coin_stats_id")
+    private String coinstatsId;
+
+    @Column(name = "contract_address")
+    private String contractAddress;
 
     public Long getId() {
         return id;
@@ -75,12 +95,20 @@ public class CryptoCurrency extends PersistedObject{
         this.name = name;
     }
 
-    public Long getMaxSupply() {
-        return maxSupply;
+    public Long getTotalSupply() {
+        return totalSupply;
     }
 
-    public void setMaxSupply(Long maxSupply) {
-        this.maxSupply = maxSupply;
+    public void setTotalSupply(Long totalSupply) {
+        this.totalSupply = totalSupply;
+    }
+
+    public Long getAvailableSupply() {
+        return availableSupply;
+    }
+
+    public void setAvailableSupply(Long availableSupply) {
+        this.availableSupply = availableSupply;
     }
 
     public Long getCirculatingSupply() {
@@ -99,12 +127,20 @@ public class CryptoCurrency extends PersistedObject{
         this.capitalization = capitalization;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getPriceUSD() {
+        return priceUSD;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setPriceUSD(Double priceUSD) {
+        this.priceUSD = priceUSD;
+    }
+
+    public Double getPriceBTC() {
+        return priceBTC;
+    }
+
+    public void setPriceBTC(Double priceBTC) {
+        this.priceBTC = priceBTC;
     }
 
     public Double getDayVolume() {
@@ -115,28 +151,28 @@ public class CryptoCurrency extends PersistedObject{
         this.dayVolume = dayVolume;
     }
 
-    public Double getPercentChange1h() {
-        return percentChange1h;
+    public Double getPriceChange1h() {
+        return priceChange1h;
     }
 
-    public void setPercentChange1h(Double percentChange1h) {
-        this.percentChange1h = percentChange1h;
+    public void setPriceChange1h(Double priceChange1h) {
+        this.priceChange1h = priceChange1h;
     }
 
-    public Double getPercentChange24h() {
-        return percentChange24h;
+    public Double getPriceChange1d() {
+        return priceChange1d;
     }
 
-    public void setPercentChange24h(Double percentChange24h) {
-        this.percentChange24h = percentChange24h;
+    public void setPriceChange1d(Double priceChange1d) {
+        this.priceChange1d = priceChange1d;
     }
 
-    public Double getPercentChange7d() {
-        return percentChange7d;
+    public Double getPriceChange1w() {
+        return priceChange1w;
     }
 
-    public void setPercentChange7d(Double percentChange7d) {
-        this.percentChange7d = percentChange7d;
+    public void setPriceChange1w(Double priceChange1w) {
+        this.priceChange1w = priceChange1w;
     }
 
     public String getDescription() {
@@ -147,12 +183,28 @@ public class CryptoCurrency extends PersistedObject{
         this.description = description;
     }
 
-    public String getLogoUrl() {
-        return logoUrl;
+    public String getIcon() {
+        return icon;
     }
 
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getWebsiteUrl() {
+        return websiteUrl;
+    }
+
+    public void setWebsiteUrl(String websiteUrl) {
+        this.websiteUrl = websiteUrl;
+    }
+
+    public String getRedditUrl() {
+        return redditUrl;
+    }
+
+    public void setRedditUrl(String redditUrl) {
+        this.redditUrl = redditUrl;
     }
 
     public Long getCoinMarketCapId() {
@@ -163,23 +215,54 @@ public class CryptoCurrency extends PersistedObject{
         this.coinMarketCapId = coinMarketCapId;
     }
 
+    public String getCoinstatsId() {
+        return coinstatsId;
+    }
+
+    public void setCoinstatsId(String coinstatsId) {
+        this.coinstatsId = coinstatsId;
+    }
+
+    public String getTwitterUrl() {
+        return twitterUrl;
+    }
+
+    public void setTwitterUrl(String twitterUrl) {
+        this.twitterUrl = twitterUrl;
+    }
+
+    public String getContractAddress() {
+        return contractAddress;
+    }
+
+    public void setContractAddress(String contractAddress) {
+        this.contractAddress = contractAddress;
+    }
+
     @Override
     public String toString() {
         return "CryptoCurrency{" +
                 "id=" + id +
                 ", symbol='" + symbol + '\'' +
                 ", name='" + name + '\'' +
-                ", maxSupply=" + maxSupply +
+                ", totalSupply=" + totalSupply +
+                ", availableSupply=" + availableSupply +
                 ", circulatingSupply=" + circulatingSupply +
                 ", capitalization=" + capitalization +
-                ", price=" + price +
+                ", priceUSD=" + priceUSD +
+                ", priceBTC=" + priceBTC +
                 ", dayVolume=" + dayVolume +
-                ", percentChange1h=" + percentChange1h +
-                ", percentChange24h=" + percentChange24h +
-                ", percentChange7d=" + percentChange7d +
+                ", priceChange1h=" + priceChange1h +
+                ", priceChange1d=" + priceChange1d +
+                ", priceChange1w=" + priceChange1w +
                 ", description='" + description + '\'' +
-                ", logoUrl='" + logoUrl + '\'' +
+                ", icon='" + icon + '\'' +
+                ", websiteUrl='" + websiteUrl + '\'' +
+                ", redditUrl='" + redditUrl + '\'' +
+                ", twitterUrl='" + twitterUrl + '\'' +
                 ", coinMarketCapId=" + coinMarketCapId +
+                ", coinstatsId='" + coinstatsId + '\'' +
+                ", contractAddress='" + contractAddress + '\'' +
                 '}';
     }
 }

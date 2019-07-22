@@ -60,14 +60,14 @@
                     <td>
                       <a th:href="'/cryptocurrency/' + ${currency.id}" th:text="${currency.name}"></a>
                     </td>
-                    <td th:text="'$' + ${currency.price}"></td>
+                    <td th:text="'$' + ${currency.priceUSD}"></td>
                     <td th:text="'$' + ${#numbers.formatDecimal(currency.dayVolume,1, 2)}"></td>
 
                     <!--<td>-->
                       <!--<span th:classAppend="${currency.percentChange1h} >= 0 ? badge-success : badge-danger" class="badge" th:text="${currency.percentChange1h}"></span>-->
                     <!--</td>-->
 
-                    <td th:text="${#numbers.formatDecimal(currency.percentChange24h,1,2)} + '%'" th:classAppend="${currency.percentChange24h} >= 0 ? text-success : text-danger" class="font-weight-bold" ></td>
+                    <td th:text="${#numbers.formatDecimal(currency.priceChange1d,1,2)} + '%'" th:classAppend="${currency.priceChange1d} >= 0 ? text-success : text-danger" class="font-weight-bold" ></td>
 
                     <!--<td>-->
                       <!--<span th:classAppend="${currency.percentChange7d} >= 0 ? badge-success : badge-danger" class="badge" th:text="${currency.percentChange7d}"></span>-->
