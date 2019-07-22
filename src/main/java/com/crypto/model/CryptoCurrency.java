@@ -1,7 +1,6 @@
 package com.crypto.model;
 
 import javax.persistence.*;
-import java.lang.reflect.Method;
 
 @Entity
 @Table(name = "crypto_currencies")
@@ -11,11 +10,11 @@ public class CryptoCurrency extends PersistedObject{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "short_name",updatable = false)
-    private String shortName;
+    @Column(name = "symbol",updatable = false)
+    private String symbol;
 
-    @Column(name = "full_name", updatable = false)
-    private String fullName;
+    @Column(name = "name", updatable = false)
+    private String name;
 
     @Column(name = "max_supply")
     private Long maxSupply;
@@ -60,20 +59,20 @@ public class CryptoCurrency extends PersistedObject{
         this.id = id;
     }
 
-    public String getShortName() {
-        return shortName;
+    public String getSymbol() {
+        return symbol;
     }
 
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getMaxSupply() {
@@ -168,8 +167,8 @@ public class CryptoCurrency extends PersistedObject{
     public String toString() {
         return "CryptoCurrency{" +
                 "id=" + id +
-                ", shortName='" + shortName + '\'' +
-                ", fullName='" + fullName + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", name='" + name + '\'' +
                 ", maxSupply=" + maxSupply +
                 ", circulatingSupply=" + circulatingSupply +
                 ", capitalization=" + capitalization +

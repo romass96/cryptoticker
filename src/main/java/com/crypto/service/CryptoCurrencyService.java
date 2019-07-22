@@ -26,6 +26,10 @@ public class CryptoCurrencyService {
         return cryptoCurrencyRepository.save(cryptoCurrency);
     }
 
+    public CryptoCurrency findById(Long id) {
+        return cryptoCurrencyRepository.findById(id).orElse(null);
+    }
+
     public List<CryptoCurrency> updateAll(List<CryptoCurrency> cryptoCurrencies) {
         cryptoCurrencies.forEach(cryptoCurrency -> {
             CryptoCurrency byId = findByCoinMarketCapId(cryptoCurrency.getCoinMarketCapId());
@@ -41,8 +45,8 @@ public class CryptoCurrencyService {
         return Utils.iterableToList(cryptoCurrencyRepository.findAll());
     }
 
-    public CryptoCurrency findByShortName(String shortName) {
-        return cryptoCurrencyRepository.findByShortName(shortName);
+    public CryptoCurrency findBySymbol(String symbol) {
+        return cryptoCurrencyRepository.findBySymbol(symbol);
     }
 
     public CryptoCurrency findByCoinMarketCapId(Long id) {
@@ -57,10 +61,10 @@ public class CryptoCurrencyService {
         return cryptoCurrencies;
     }
 
-//    public CryptoCurrency findByShortName(String shortName) {
+//    public CryptoCurrency findBySymbol(String shortName) {
 //        return getAllCryptoCurrencies()
 //                .stream()
-//                .filter(cryptoCurrency -> cryptoCurrency.getShortName().equalsIgnoreCase(shortName))
+//                .filter(cryptoCurrency -> cryptoCurrency.getSymbol().equalsIgnoreCase(shortName))
 //                .findAny()
 //                .orElse(null);
 //    }

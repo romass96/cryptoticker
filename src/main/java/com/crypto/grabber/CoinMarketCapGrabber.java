@@ -2,9 +2,7 @@ package com.crypto.grabber;
 
 import com.crypto.model.CryptoCurrency;
 import com.crypto.model.CryptoExchange;
-import com.crypto.service.CryptoCurrencyService;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -12,17 +10,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Component
@@ -36,9 +33,7 @@ public class CoinMarketCapGrabber extends Grabber{
     private static final String CONVERT_CURRENCY = "USD";
     private static final int LIMIT = 500;
 
-    @Autowired
-    private CryptoCurrencyService cryptoCurrencyService;
-
+    @Scheduled(cron = "0 0 0 * * ?")
     public List<CryptoCurrency> getAllLatestCryptoCurrencies() throws IOException {
         List<CryptoCurrency> cryptoCurrencies = new ArrayList<>();
 
@@ -88,7 +83,7 @@ public class CoinMarketCapGrabber extends Grabber{
                 String currencyJson = jsonNode.get(cryptoCurrency.getCoinMarketCapId().toString()).toString();
                 cryptoCurrency.merge(objectMapper.readValue(currencyJson, new TypeReference<CryptoCurrency>() {}));
             } catch (IOException e) {
-                logger.error("Can't to get metadata for " + cryptoCurrency.getShortName(), e);
+                logger.error("Can't to get metadata for " + cryptoCurrency.getSymbol(), e);
             }
         });
         return cryptoCurrencies;
@@ -105,19 +100,15 @@ public class CoinMarketCapGrabber extends Grabber{
 
         ObjectMapper objectMapper = getObjectMapper(CryptoExchange.class, new CryptoExchangeMetadataDeserializer());
         JsonNode jsonNode = getFinalJsonNode(EXCHANGE_METADATA_URL, queryParams, objectMapper);
-        cryptoExchanges.forEach(setCryptoExchangeMetadata(jsonNode, objectMapper));
-        return cryptoExchanges;
-    }
-
-    private Consumer<CryptoExchange> setCryptoExchangeMetadata(JsonNode jsonNode, ObjectMapper objectMapper) {
-        return cryptoExchange -> {
+        cryptoExchanges.forEach(cryptoExchange -> {
             try {
                 String exchangeJson = jsonNode.get(cryptoExchange.getName().toLowerCase()).toString();
                 cryptoExchange.merge(objectMapper.readValue(exchangeJson, new TypeReference<CryptoExchange>() {}));
             } catch (IOException e) {
                 logger.error("Can't to get metadata for " + cryptoExchange.getName(), e);
             }
-        };
+        });
+        return cryptoExchanges;
     }
 
     private ObjectMapper getObjectMapper(Class deserializationClass, StdDeserializer deserializer) {
@@ -161,8 +152,8 @@ public class CoinMarketCapGrabber extends Grabber{
             ObjectCodec objectCodec = jsonParser.getCodec();
             JsonNode currencyNode = objectCodec.readTree(jsonParser);
 
-            cryptoCurrency.setFullName(currencyNode.get("name").textValue());
-            cryptoCurrency.setShortName(currencyNode.get("symbol").textValue());
+            cryptoCurrency.setName(currencyNode.get("name").textValue());
+            cryptoCurrency.setSymbol(currencyNode.get("symbol").textValue());
             cryptoCurrency.setMaxSupply(currencyNode.get("max_supply").longValue());
             cryptoCurrency.setCirculatingSupply(currencyNode.get("circulating_supply").longValue());
             cryptoCurrency.setCoinMarketCapId(currencyNode.get("id").longValue());

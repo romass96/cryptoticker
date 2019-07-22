@@ -35,8 +35,8 @@ public class WazirxGrabber extends Grabber {
         Map<String, WazirxJsonResponse> map = objectMapper.readValue(response.getBody(), getTypeReference());
         map.values().stream().map(jsonResponse -> {
             Ticker ticker = new Ticker();
-            ticker.setBaseCurrency(cryptoCurrencyService.findByShortName(jsonResponse.base_unit));
-            ticker.setQuoteCurrency(cryptoCurrencyService.findByShortName(jsonResponse.quote_unit));
+            ticker.setBaseCurrency(cryptoCurrencyService.findBySymbol(jsonResponse.base_unit));
+            ticker.setQuoteCurrency(cryptoCurrencyService.findBySymbol(jsonResponse.quote_unit));
             ticker.setPrice(jsonResponse.last);
             return ticker;
         }).forEach(ticker -> logger.info(ticker.toString()));

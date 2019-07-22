@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CryptoCurrencyRepository extends CrudRepository<CryptoCurrency, Long> {
-    CryptoCurrency findByShortName(String shortName);
+    CryptoCurrency findBySymbol(String symbol);
     CryptoCurrency findByCoinMarketCapId(Long id);
 }
