@@ -39,7 +39,7 @@
 
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-start mb-4">
-            <img th:src="${currency.logoUrl}" class="figure-img rounded" width="40px" height="40px" style="margin-right: 15px">
+            <img th:src="${currency.icon}" class="figure-img rounded" width="40px" height="40px" style="margin-right: 15px">
             <h1 class="h3 mb-0 text-gray-800" th:text="${currency.name}"></h1>
           </div>
 
@@ -107,16 +107,16 @@
                       <label class="col-sm-8 col-form-label font-weight-bold text-primary" th:text="${currency.totalSupply}" id="currencyMaxSupply"></label>
                     </div>
                     <div class="form-group row">
-                      <label for="currencyPercentChange1h" class="col-sm-4 col-form-label">Price change 1h</label>
-                      <label class="col-sm-8 col-form-label font-weight-bold" th:classAppend="${currency.priceChange1h} >= 0 ? text-success : text-danger" th:text="${currency.percentChange1h} + '%'" id="currencyPercentChange1h"></label>
+                      <label for="currencyPriceChange1h" class="col-sm-4 col-form-label">Price change 1h</label>
+                      <label class="col-sm-8 col-form-label font-weight-bold" th:classAppend="${currency.priceChange1h} >= 0 ? text-success : text-danger" th:text="${currency.priceChange1h} + '%'" id="currencyPriceChange1h"></label>
                     </div>
                     <div class="form-group row">
-                      <label for="currencyPercentChange1d" class="col-sm-4 col-form-label">Price change 1d</label>
-                      <label class="col-sm-8 col-form-label font-weight-bold" th:classAppend="${currency.priceChange1d} >= 0 ? text-success : text-danger" th:text="${currency.percentChange24h} + '%'" id="currencyPercentChange1d"></label>
+                      <label for="currencyPriceChange1d" class="col-sm-4 col-form-label">Price change 1d</label>
+                      <label class="col-sm-8 col-form-label font-weight-bold" th:classAppend="${currency.priceChange1d} >= 0 ? text-success : text-danger" th:text="${currency.priceChange1d} + '%'" id="currencyPriceChange1d"></label>
                     </div>
                     <div class="form-group row">
-                      <label for="currencyPercentChange7d" class="col-sm-4 col-form-label">Price change 1w</label>
-                      <label class="col-sm-8 col-form-label font-weight-bold" th:classAppend="${currency.priceChange1w} >= 0 ? text-success : text-danger" th:text="${currency.percentChange7d} + '%'" id="currencyPercentChange7d"></label>
+                      <label for="currencyPriceChange1w" class="col-sm-4 col-form-label">Price change 1w</label>
+                      <label class="col-sm-8 col-form-label font-weight-bold" th:classAppend="${currency.priceChange1w} >= 0 ? text-success : text-danger" th:text="${currency.priceChange1w} + '%'" id="currencyPriceChange1w"></label>
                     </div>
                   </form>
                 </div>

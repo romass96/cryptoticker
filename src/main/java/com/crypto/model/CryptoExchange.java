@@ -24,6 +24,10 @@ public class CryptoExchange extends PersistedObject {
     @Column(name = "logo_url")
     private String logoUrl;
 
+    public CryptoExchange(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

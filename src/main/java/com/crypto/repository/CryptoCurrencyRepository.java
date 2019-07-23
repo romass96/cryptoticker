@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface CryptoCurrencyRepository extends CrudRepository<CryptoCurrency, Long> {
     CryptoCurrency findBySymbol(String symbol);
     CryptoCurrency findByCoinMarketCapId(Long id);
+    CryptoCurrency findByCoinstatsId(String coinStatsId);
 }

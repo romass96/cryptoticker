@@ -1,6 +1,7 @@
 package com.crypto.grabber;
 
 import com.crypto.model.CryptoCurrency;
+import com.crypto.model.CryptoExchange;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,15 +12,14 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class CoinStatsGrabber extends Grabber {
     private static final String API_URL = "https://api.coinstats.app/public/v1/";
     private static final String COINS_URL = API_URL + "coins";
+    private static final String EXCHANGES_URL = API_URL + "exchanges";
     private static final int LIMIT = 500;
 
 
@@ -45,6 +45,15 @@ public class CoinStatsGrabber extends Grabber {
         return cryptoCurrencies;
     }
 
+    public List<CryptoExchange> getAllExchanges() throws IOException {
+        ObjectMapper objectMapper = getObjectMapper();
+        Map<String, String> queryParams = Collections.emptyMap();
+
+        String finalJson = getFinalJsonNode(EXCHANGES_URL, queryParams, objectMapper, "supportedExchanges").toString();
+        List<String> exchanges = objectMapper.readValue(finalJson, new TypeReference<List<String>>(){});
+        return exchanges.stream().map(CryptoExchange::new).collect(Collectors.toList());
+    }
+
 }
 
 class CryptoCurrencyDeserializer extends StdDeserializer<CryptoCurrency> {
@@ -68,6 +77,7 @@ class CryptoCurrencyDeserializer extends StdDeserializer<CryptoCurrency> {
         cryptoCurrency.setCoinstatsId(currencyNode.get("id").textValue());
         cryptoCurrency.setPriceUSD(currencyNode.get("price").doubleValue());
         cryptoCurrency.setPriceBTC(currencyNode.get("priceBtc").doubleValue());
+        cryptoCurrency.setIcon(currencyNode.get("icon").textValue());
         if (currencyNode.get("volume") != null) {
             cryptoCurrency.setDayVolume(currencyNode.get("volume").doubleValue());
         }
