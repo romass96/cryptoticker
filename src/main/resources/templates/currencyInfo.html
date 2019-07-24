@@ -50,7 +50,7 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Capitalization</div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${currency.capitalization}"></div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#numbers.formatDecimal(currency.capitalization, 1, 2)}"></div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -66,7 +66,7 @@
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Day volume</div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${currency.dayVolume}"></div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#numbers.formatDecimal(currency.dayVolume, 1, 2)}"></div>
                     </div>
                     <div class="col-auto">
                       <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>

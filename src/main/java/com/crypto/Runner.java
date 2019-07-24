@@ -32,8 +32,8 @@ public class Runner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 //        List<CryptoCurrency> currencyList = cryptoCurrencyService.updateAll(coinMarketCapGrabber.getAllLatestCryptoCurrencies());
-//        List<CryptoCurrency> currencyList = cryptoCurrencyService.saveAll(coinStatsGrabber.getAllCoins());
-//        logger.info(currencyList.get(0).toString());
+        List<CryptoCurrency> currencyList = cryptoCurrencyService.saveAll(coinStatsGrabber.getAllCoins());
+        logger.info(currencyList.get(0).toString());
 
     }
 }
