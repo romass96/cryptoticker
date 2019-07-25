@@ -1,6 +1,7 @@
 package com.crypto.model;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class CryptoNews extends PersistedObject {
     private String id;
@@ -9,6 +10,7 @@ public class CryptoNews extends PersistedObject {
     private String title;
     private String imgUrl;
     private String link;
+    private List<CryptoCurrency> relatedCoins;
 
     public String getId() {
         return id;
@@ -56,5 +58,13 @@ public class CryptoNews extends PersistedObject {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public List<CryptoCurrency> getRelatedCoins() {
+        return relatedCoins;
+    }
+
+    public void setRelatedCoins(List<CryptoCurrency> relatedCoins) {
+        this.relatedCoins = relatedCoins;
     }
 }

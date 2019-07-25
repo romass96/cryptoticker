@@ -3,6 +3,7 @@ package com.crypto.grabber;
 import com.crypto.model.CryptoCurrency;
 import com.crypto.model.CryptoExchange;
 import com.crypto.model.CryptoNews;
+import com.crypto.service.CryptoCurrencyService;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -10,12 +11,14 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Component
 public class CoinStatsGrabber extends Grabber {
@@ -24,6 +27,9 @@ public class CoinStatsGrabber extends Grabber {
     private static final String EXCHANGES_URL = API_URL + "exchanges";
     private static final String NEWS_URL = API_URL + "news";
     private static final int LIMIT = 500;
+
+    @Autowired
+    private CryptoCurrencyService cryptoCurrencyService;
 
 
     public List<CryptoCurrency> getAllCoins() throws IOException {
@@ -60,7 +66,7 @@ public class CoinStatsGrabber extends Grabber {
     public List<CryptoNews> getAllNews() throws IOException {
         List<CryptoNews> cryptoNews = new ArrayList<>();
 
-        ObjectMapper objectMapper = getObjectMapper(CryptoNews.class, new CryptoNewsDeserializer());
+        ObjectMapper objectMapper = getObjectMapper(CryptoNews.class, new CryptoNewsDeserializer(cryptoCurrencyService));
         TypeReference typeReference = new TypeReference<List<CryptoNews>>() {};
 
         Map<String, String> queryParams = new HashMap<>();
@@ -74,7 +80,7 @@ public class CoinStatsGrabber extends Grabber {
             parsedNews = objectMapper.readValue(finalJson, typeReference);
             cryptoNews.addAll(parsedNews);
             startIndex += LIMIT;
-        } while (!parsedNews.isEmpty() || startIndex < 100);
+        } while (!parsedNews.isEmpty() && startIndex < 100);
         return cryptoNews;
     }
 
@@ -137,15 +143,17 @@ class CryptoCurrencyDeserializer extends StdDeserializer<CryptoCurrency> {
 }
 
 class CryptoNewsDeserializer extends StdDeserializer<CryptoNews> {
+    private CryptoCurrencyService cryptoCurrencyService;
 
-
-    public CryptoNewsDeserializer() {
-        this(null);
+    public CryptoNewsDeserializer(CryptoCurrencyService cryptoCurrencyService) {
+        this(CryptoNews.class);
+        this.cryptoCurrencyService = cryptoCurrencyService;
     }
 
     protected CryptoNewsDeserializer(Class<CryptoNews> t) {
         super(t);
     }
+
     @Override
     public CryptoNews deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         CryptoNews cryptoNews = new CryptoNews();
@@ -158,6 +166,11 @@ class CryptoNewsDeserializer extends StdDeserializer<CryptoNews> {
         cryptoNews.setTitle(currencyNode.get("title").textValue());
         cryptoNews.setImgUrl(currencyNode.get("imgURL").textValue());
         cryptoNews.setLink(currencyNode.get("link").textValue());
+        cryptoNews.setRelatedCoins(
+                StreamSupport
+                        .stream(currencyNode.get("relatedCoins").spliterator(), false)
+                        .map(jsonNode -> cryptoCurrencyService.findByCoinStatsId(jsonNode.textValue()))
+                        .collect(Collectors.toList()));
 
         return cryptoNews;
     }

@@ -21,6 +21,24 @@
   <!-- Custom styles for this page -->
   <link href="../static/vendor/datatables/dataTables.bootstrap4.min.css" th:href="@{/vendor/datatables/dataTables.bootstrap4.min.css}" rel="stylesheet">
 
+  <style>
+    .coin-logo {
+      margin: 5px;
+    }
+
+    .row {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display:         flex;
+      flex-wrap: wrap;
+}
+.row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+
+  </style>
 </head>
 
 <body id="page-top">
@@ -37,25 +55,30 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">Crypto news</h6>
-            </div>
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Crypto news</h1>
           </div>
 
           <div class="row">
 
-            <div th:each="new : ${news}" class="col-xl-3 col-md-6 mb-4">
+            <div th:each="newsObj : ${news}" class="col-xl-3 col-md-6 mb-4">
               <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                  <h6 th:text="${new.title}" class="m-0 font-weight-bold text-primary"></h6>
+                  <h6 th:text="${newsObj.title}" class="m-0 font-weight-bold text-primary"></h6>
                 </div>
                 <div class="card-body">
                   <div class="text-center">
-                    <img th:src="new.imgUrl" class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;">
+                    <img th:src="${newsObj.imgUrl}" class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;">
                   </div>
                   <p>Add some quality, svg illustrations to your project courtesy of <a target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a constantly updated collection of beautiful svg images that you can use completely free and without attribution!</p>
-                  <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on unDraw &rarr;</a>
+                  <a target="_blank" th:href="${newsObj.link}">More &rarr;</a>
+                </div>
+                <div class="card-footer">
+                  <div class="d-sm-flex align-items-center justify-content-start">
+                    <a th:each="coin : ${newsObj.relatedCoins}" th:href="'/cryptocurrency/' + ${coin.id}">
+                      <img th:src="${coin.icon}" class="coin-logo rounded" width="40px" height="40px" >
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

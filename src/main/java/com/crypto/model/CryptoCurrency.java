@@ -71,6 +71,12 @@ public class CryptoCurrency extends PersistedObject{
     @Column(name = "contract_address")
     private String contractAddress;
 
+    public static CryptoCurrency ofCoinStatsId(String coinStatsId) {
+        CryptoCurrency cryptoCurrency = new CryptoCurrency();
+        cryptoCurrency.setCoinstatsId(coinStatsId);
+        return cryptoCurrency;
+    }
+
     public Long getId() {
         return id;
     }
