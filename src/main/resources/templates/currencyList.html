@@ -58,9 +58,9 @@
                   </tr>
                   <tr th:each="currency : ${currencies}">
                     <td>
-                      <a th:href="'/cryptocurrency/' + ${currency.id}" th:text="${currency.name}"></a>
+                      <a th:href="'/cryptoCurrency/' + ${currency.id}" th:text="${currency.name}"></a>
                     </td>
-                    <td th:text="'$' + ${currency.priceUSD}"></td>
+                    <td th:text="'$' + ${currency.priceUSD}" class="font-weight-bold"></td>
                     <td th:text="'$' + ${#numbers.formatDecimal(currency.dayVolume,1, 2)}"></td>
 
                     <!--<td>-->
