@@ -5,10 +5,11 @@ import com.crypto.repository.CryptoHoldingRepository;
 import com.crypto.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class CryptoHoldingService {
 
     @Autowired
