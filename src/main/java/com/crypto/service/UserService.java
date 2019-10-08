@@ -5,8 +5,12 @@ import com.crypto.model.User;
 import com.crypto.repository.PasswordTokenRepository;
 import com.crypto.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.intercept.RunAsUserToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,12 +38,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() ->new UsernameNotFoundException(email));
-
-        Set<GrantedAuthority> grantedAuthorities = user.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toSet());
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
+        return user.toUserDetails();
     }
 
     public User findUserByEmail(String email) {
@@ -66,11 +65,13 @@ public class UserService implements UserDetailsService {
         if (resetToken == null || resetToken.getUser().getId() != userId) {
             return PasswordResetToken.TokenStatus.WRONG;
         }
-
         Calendar calendar = Calendar.getInstance();
         if (resetToken.getExpiryDate().getTime() - calendar.getTime().getTime() <= 0) {
             return PasswordResetToken.TokenStatus.EXPIRED;
         }
+        UserDetails userDetails = resetToken.getUser().toUserDetails();
+        Authentication auth = new UsernamePasswordAuthenticationToken(resetToken.getUser(), null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
         return PasswordResetToken.TokenStatus.CORRECT;
     }
 }

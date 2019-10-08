@@ -1,14 +1,18 @@
 package com.crypto.model;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
+import javax.security.auth.Subject;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
-public class User  {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,4 +55,13 @@ public class User  {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
+    public org.springframework.security.core.userdetails.User toUserDetails() {
+        Set<GrantedAuthority> grantedAuthorities = roles
+                .stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toSet());
+        return new org.springframework.security.core.userdetails.User(email, password, grantedAuthorities);
+    }
+
 }
