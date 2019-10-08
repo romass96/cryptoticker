@@ -52,13 +52,13 @@ public class MainController {
     }
 
     @GetMapping("/statistics")
-    public String statisticsPage(Model model) throws IOException {
+    public String statisticsPage(Model model) {
         model.addAttribute("statisticsPageActive", ACTIVE_PAGE_CLASS);
         return "statistics";
     }
 
     @GetMapping("/portfolio")
-    public String portfolioPage(Model model) throws IOException {
+    public String portfolioPage(Model model) {
         model.addAttribute("portfolioPageActive", ACTIVE_PAGE_CLASS);
         return "portfolio";
     }
