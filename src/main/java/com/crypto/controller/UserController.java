@@ -3,11 +3,11 @@ package com.crypto.controller;
 import com.crypto.model.PasswordResetToken;
 import com.crypto.model.User;
 import com.crypto.service.EmailService;
+import com.crypto.service.PasswordResetService;
 import com.crypto.service.UserService;
 import com.crypto.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +26,9 @@ public class UserController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private PasswordResetService passwordResetService;
+
     @GetMapping("/login")
     public String loginPage(Model model, String error, String logout) {
         if (error != null)
@@ -37,6 +40,17 @@ public class UserController {
         return "login";
     }
 
+    @GetMapping("/registration")
+    public String registrationPage() {
+        return "register";
+    }
+
+    @PostMapping("/registration")
+    public String register() {
+        return "";
+    }
+
+
     @GetMapping("/user/resetPassword")
     public String resetPasswordPage() {
         return "resetPassword";
@@ -46,15 +60,17 @@ public class UserController {
     public String resetPassword(@RequestParam String email, HttpServletRequest request) {
         User user = userService.findUserByEmail(email);
         String token = UUID.randomUUID().toString();
-        userService.createPasswordResetTokenForUser(user, token);
+        passwordResetService.createPasswordResetTokenForUser(user, token);
         emailService.sendResetTokenEmail(user, Utils.getApplicationUrl(request), token);
         return "login";
     }
 
     @GetMapping("/user/changePassword")
     public String changePasswordPage(@RequestParam Long id, @RequestParam String token) {
-        final PasswordResetToken.TokenStatus result = userService.validatePasswordResetToken(id, token);
+        PasswordResetToken resetToken = passwordResetService.findByToken(token);
+        final PasswordResetToken.TokenStatus result = passwordResetService.validatePasswordResetToken(id, resetToken);
         if (result == PasswordResetToken.TokenStatus.CORRECT) {
+            passwordResetService.authenticateUserForResetPassword(resetToken);
             return "changePassword";
         } else {
             return "";

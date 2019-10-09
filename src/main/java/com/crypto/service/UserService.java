@@ -37,7 +37,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(() ->new UsernameNotFoundException(email));
+        User user = findUserByEmail(email);
         return user.toUserDetails();
     }
 
@@ -55,23 +55,4 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void createPasswordResetTokenForUser(User user, String token) {
-        PasswordResetToken resetToken = new PasswordResetToken(user, token);
-        passwordTokenRepository.save(resetToken);
-    }
-
-    public PasswordResetToken.TokenStatus validatePasswordResetToken(Long userId, String token) {
-        PasswordResetToken resetToken = passwordTokenRepository.findByToken(token);
-        if (resetToken == null || resetToken.getUser().getId() != userId) {
-            return PasswordResetToken.TokenStatus.WRONG;
-        }
-        Calendar calendar = Calendar.getInstance();
-        if (resetToken.getExpiryDate().getTime() - calendar.getTime().getTime() <= 0) {
-            return PasswordResetToken.TokenStatus.EXPIRED;
-        }
-        UserDetails userDetails = resetToken.getUser().toUserDetails();
-        Authentication auth = new UsernamePasswordAuthenticationToken(resetToken.getUser(), null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        return PasswordResetToken.TokenStatus.CORRECT;
-    }
 }
