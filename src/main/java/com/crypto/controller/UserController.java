@@ -2,16 +2,20 @@ package com.crypto.controller;
 
 import com.crypto.dto.UserDTO;
 import com.crypto.model.PasswordResetToken;
+import com.crypto.model.Token;
 import com.crypto.model.User;
+import com.crypto.model.VerificationToken;
 import com.crypto.service.EmailService;
-import com.crypto.service.PasswordResetService;
+import com.crypto.service.TokenService;
 import com.crypto.service.UserService;
 import com.crypto.util.Utils;
+import com.crypto.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +24,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.UUID;
 
 @Controller
 public class UserController {
@@ -32,7 +35,7 @@ public class UserController {
     private EmailService emailService;
 
     @Autowired
-    private PasswordResetService passwordResetService;
+    private TokenService tokenService;
 
     @GetMapping("/login")
     public String loginPage(Model model, String error, String logout) {
@@ -52,34 +55,48 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public ModelAndView register(@ModelAttribute("userForm") @Valid UserDTO userDTO, BindingResult result) {
-        if (result.hasErrors()) {
+    public ModelAndView register(@ModelAttribute("userForm") UserDTO userDTO, BindingResult result, HttpServletRequest request) {
+        User user = userService.createUserAccount(userDTO, result);
+        if (user != null) {
+            VerificationToken verificationToken = tokenService.createVerificationTokenForUser(user);
+            emailService.sendVerificationEmail(user, Utils.getApplicationUrl(request), verificationToken.getToken());
+            return new ModelAndView("successRegistration");
+        } else {
             return new ModelAndView("register", "userForm", userDTO);
         }
-        return new ModelAndView("successRegistration");
     }
 
+    @GetMapping("/user/verifyEmail")
+    public String verifyEmail(@RequestParam Long id, @RequestParam String token) {
+        VerificationToken verificationToken = tokenService.findVerificationTokenByToken(token);
+        final Token.TokenStatus result = tokenService.validateToken(id, verificationToken);
+        if (result == Token.TokenStatus.CORRECT) {
+            userService.setUserEnabled(id, true);
+            return "login";
+        } else {
+            return "";
+        }
+    }
 
-    @GetMapping("/user/resetPassword")
+    @GetMapping("/forgotPassword")
     public String resetPasswordPage() {
-        return "resetPassword";
+        return "forgot-password";
     }
 
     @PostMapping("/user/resetPassword")
     public String resetPassword(@RequestParam String email, HttpServletRequest request) {
         User user = userService.findUserByEmail(email);
-        String token = UUID.randomUUID().toString();
-        passwordResetService.createPasswordResetTokenForUser(user, token);
-        emailService.sendResetTokenEmail(user, Utils.getApplicationUrl(request), token);
+        PasswordResetToken resetToken = tokenService.createPasswordResetTokenForUser(user);
+        emailService.sendResetTokenEmail(user, Utils.getApplicationUrl(request), resetToken.getToken());
         return "login";
     }
 
     @GetMapping("/user/changePassword")
     public String changePasswordPage(@RequestParam Long id, @RequestParam String token) {
-        PasswordResetToken resetToken = passwordResetService.findByToken(token);
-        final PasswordResetToken.TokenStatus result = passwordResetService.validatePasswordResetToken(id, resetToken);
-        if (result == PasswordResetToken.TokenStatus.CORRECT) {
-            passwordResetService.authenticateUserForResetPassword(resetToken);
+        PasswordResetToken resetToken = tokenService.findResetTokenByToken(token);
+        final Token.TokenStatus result = tokenService.validateToken(id, resetToken);
+        if (result == Token.TokenStatus.CORRECT) {
+            tokenService.authenticateUserForResetPassword(resetToken);
             return "changePassword";
         } else {
             return "";

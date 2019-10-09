@@ -1,6 +1,6 @@
 package com.crypto.validator;
 
-import com.crypto.model.User;
+import com.crypto.dto.UserDTO;
 import com.crypto.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,15 +20,17 @@ public class UserValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return User.class.equals(aClass);
+        return UserDTO.class.equals(aClass);
     }
 
     @Override
     public void validate(Object o, Errors errors) {
-        User user = (User) o;
+        UserDTO user = (UserDTO) o;
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", NOT_EMPTY);
-        userService.findByEmail(user.getEmail()).ifPresent(foundedUser -> errors.rejectValue("email", "Duplicate.userForm.email"));
+        if (userService.isUserWithEmailExists(user.getEmail())) {
+            errors.rejectValue("email", "Duplicate.userForm.email");
+        }
         emailValidator.validate(user.getEmail(), errors);
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", NOT_EMPTY);

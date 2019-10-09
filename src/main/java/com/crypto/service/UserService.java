@@ -1,38 +1,36 @@
 package com.crypto.service;
 
-import com.crypto.model.PasswordResetToken;
+import com.crypto.dto.UserDTO;
+import com.crypto.model.Role;
 import com.crypto.model.User;
-import com.crypto.repository.PasswordTokenRepository;
+import com.crypto.repository.RoleRepository;
 import com.crypto.repository.UserRepository;
+import com.crypto.util.Utils;
+import com.crypto.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.intercept.RunAsUserToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
-import java.util.Calendar;
-import java.util.Set;
-import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
-
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordTokenRepository passwordTokenRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private UserValidator userValidator;
 
 
     @Override
@@ -45,14 +43,35 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email).orElseThrow(() ->new UsernameNotFoundException(email));
     }
 
-    public void save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public void updateUserPassword(User user, String originalPassword) {
+        user.setPassword(passwordEncoder.encode(originalPassword));
         userRepository.save(user);
     }
 
-    public void updateUserPassword(User user, String password) {
-        user.setPassword(passwordEncoder.encode(password));
-        userRepository.save(user);
+    public User createUserAccount(UserDTO userDTO, BindingResult bindingResult) {
+        userValidator.validate(userDTO, bindingResult);
+        if (bindingResult.hasErrors()) {
+            return null;
+        }
+        User user = userDTO.toUser();
+        Role role = roleRepository.findByName(Role.ROLE_USER);
+        role.addUser(user);
+        user.setRoles(Utils.asSet(role));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
+
+    public void setUserEnabled(Long userId, boolean enabled) {
+        userRepository.updateUserEnabled(userId, enabled);
+    }
+
+    public boolean isUserWithEmailExists(String email) {
+        try {
+            findUserByEmail(email);
+            return true;
+        } catch (UsernameNotFoundException e) {
+            return false;
+        }
     }
 
 }
