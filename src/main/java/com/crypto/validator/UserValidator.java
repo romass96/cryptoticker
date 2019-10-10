@@ -10,7 +10,6 @@ import org.springframework.validation.Validator;
 
 @Component
 public class UserValidator implements Validator {
-    private static final String NOT_EMPTY = "NotEmpty";
 
     @Autowired
     private UserService userService;
@@ -27,23 +26,23 @@ public class UserValidator implements Validator {
     public void validate(Object o, Errors errors) {
         UserDTO user = (UserDTO) o;
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", NOT_EMPTY);
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "Email can't be empty");
         if (userService.isUserWithEmailExists(user.getEmail())) {
-            errors.rejectValue("email", "Duplicate.userForm.email");
+            errors.rejectValue("email", "User with this email exists");
         }
         emailValidator.validate(user.getEmail(), errors);
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", NOT_EMPTY);
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "Password can't be empty");
         if (user.getPassword().length() < 8 || user.getPassword().length() > 32) {
-            errors.rejectValue("password", "Size.userForm.password");
+            errors.rejectValue("password", "Password must have length 8-32 symbols");
         }
 
         if (!user.getConfirmPassword().equals(user.getPassword())) {
-            errors.rejectValue("confirmPassword", "Diff.userForm.passwordConfirm");
+            errors.rejectValue("confirmPassword", "Passwords don't match");
         }
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", NOT_EMPTY);
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", NOT_EMPTY);
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "First name can't be empty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "Last name can't be empty");
 
     }
 }

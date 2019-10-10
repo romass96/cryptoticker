@@ -9,21 +9,21 @@ import com.crypto.service.EmailService;
 import com.crypto.service.TokenService;
 import com.crypto.service.UserService;
 import com.crypto.util.Utils;
-import com.crypto.validator.UserValidator;
+import com.crypto.util.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -49,21 +49,23 @@ public class UserController {
     }
 
     @GetMapping("/registration")
-    public String registrationPage(Model model) {
-        model.addAttribute("userForm", new UserDTO());
+    public String registrationPage() {
         return "register";
     }
 
     @PostMapping("/registration")
-    public ModelAndView register(@ModelAttribute("userForm") UserDTO userDTO, BindingResult result, HttpServletRequest request) {
-        User user = userService.createUserAccount(userDTO, result);
-        if (user != null) {
+    public ResponseEntity<List<ObjectError>> register(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+        ValidationResult<User> validationResult = userService.createUserAccount(userDTO);
+        final HttpStatus httpStatus;
+        if (validationResult.isSuccess()) {
+            User user = validationResult.getValue().get();
             VerificationToken verificationToken = tokenService.createVerificationTokenForUser(user);
             emailService.sendVerificationEmail(user, Utils.getApplicationUrl(request), verificationToken.getToken());
-            return new ModelAndView("successRegistration");
+            httpStatus = HttpStatus.CREATED;
         } else {
-            return new ModelAndView("register", "userForm", userDTO);
+            httpStatus = HttpStatus.BAD_REQUEST;
         }
+        return new ResponseEntity<>(validationResult.getErrors(), httpStatus);
     }
 
     @GetMapping("/user/verifyEmail")

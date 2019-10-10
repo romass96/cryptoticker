@@ -23,7 +23,7 @@ public class EmailValidator implements Validator {
         String email = (String) o;
         Matcher matcher = pattern.matcher(email);
         if (!matcher.matches()) {
-            errors.rejectValue("email", "NotValidEmail");
+            errors.rejectValue("email", "Email isn't valid");
         }
     }
 }
