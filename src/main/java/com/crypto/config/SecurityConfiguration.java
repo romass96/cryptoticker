@@ -1,5 +1,6 @@
 package com.crypto.config;
 
+import com.crypto.handler.AuthenticationHandler;
 import com.crypto.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String[] PUBLIC_MATCHERS = {
             "/registration",
+            "/successRegistration",
+            "/user/resetPassword",
             "/forgotPassword",
+            "/user/verifyEmail",
             "/css/**",
             "/img/**",
             "/js/**",
@@ -42,23 +46,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeRequests()
-//                    .antMatchers(PUBLIC_MATCHERS).permitAll()
-//                    .anyRequest()
-//                    .authenticated()
-//                    .and()
-//                .formLogin()
-//                    .loginPage("/login")
-//                    .permitAll()
-//                    .and()
-//                .logout()
-//                    .permitAll();
-
         http
                 .authorizeRequests()
-                .antMatchers(PUBLIC_MATCHERS).permitAll()
-                .anyRequest().permitAll();
+                    .antMatchers(PUBLIC_MATCHERS).permitAll()
+                    .anyRequest()
+                    .authenticated()
+                    .and()
+                .formLogin()
+                    .loginPage("/login")
+                    .loginProcessingUrl("/doLogin")
+                    .failureHandler(new AuthenticationHandler())
+                    .permitAll()
+                    .and()
+                .logout()
+                    .permitAll()
+                    .and()
+                .rememberMe()
+                    .key("secret");
+
+//        http
+//                .authorizeRequests()
+//                .antMatchers(PUBLIC_MATCHERS).permitAll()
+//                .anyRequest().permitAll();
     }
 
     @Override

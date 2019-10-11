@@ -38,14 +38,13 @@ public class UserController {
     private TokenService tokenService;
 
     @GetMapping("/login")
-    public String loginPage(Model model, String error, String logout) {
-        if (error != null)
-            model.addAttribute("error", "Your email and password is invalid.");
-
-        if (logout != null)
-            model.addAttribute("message", "You have been logged out successfully.");
-
+    public String loginPage() {
         return "login";
+    }
+
+    @PostMapping("/accountDisabled")
+    public String accountDisabledPage() {
+        return "accountDisabled";
     }
 
     @GetMapping("/registration")

@@ -26,8 +26,8 @@ public class MainController {
 
     @GetMapping({"/", "/cryptoCurrencies"})
     public String currencyPage(Model model) {
-        model.addAttribute("currencies", cryptoCurrencyService.findAll());
-        model.addAttribute("currenciesPageActive", ACTIVE_PAGE_CLASS);
+//        model.addAttribute("currencies", cryptoCurrencyService.findAll());
+//        model.addAttribute("currenciesPageActive", ACTIVE_PAGE_CLASS);
         return "currencyList";
     }
 
