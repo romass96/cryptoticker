@@ -1,9 +1,10 @@
 $('#register').click(function() {
+    $('.loader').show();
+    removeValidations();
     register();
 });
 
 function register() {
-    removeValidations();
     let userDTO = {
         firstName: $('#firstName').val(),
         lastName: $('#lastName').val(),
@@ -24,14 +25,12 @@ function register() {
       dataType: 'json',
       headers: headers
     }).done(function(){
+        $('.loader').hide();
         window.location.href = "/successRegistration";
     }).fail(function(jqXHR) {
+        $('.loader').hide();
         if (jqXHR.status == 400) {
-                let errorMessages = {};
-                $('.form-control').each((index, element) => errorMessages[element.id] = []);
-                jqXHR.responseJSON.forEach(function(error) {
-                    errorMessages[error.field].push(error.code);
-                });
+                let errorMessages = createErrorMessagesObject(jqXHR);
                 $('.form-control').each(function(index, element) {
                     let messages = errorMessages[element.id];
                     if (messages.length) {
@@ -59,4 +58,13 @@ function removeValidations() {
             element.classList.remove('is-valid', 'is-invalid');
         });
         $('.invalid-feedback').remove();
+}
+
+function createErrorMessagesObject(jqXHR) {
+    let errorMessages = {};
+    $('.form-control').each((index, element) => errorMessages[element.id] = []);
+    jqXHR.responseJSON.forEach(function(error) {
+        errorMessages[error.field].push(error.code);
+    });
+    return errorMessages;
 }

@@ -55,8 +55,8 @@ public class UserController {
 
     @PostMapping("/registration")
     public ResponseEntity<List<ObjectError>> register(@RequestBody UserDTO userDTO, HttpServletRequest request) {
-        ValidationResult<User> validationResult = userService.createUserAccount(userDTO);
         final HttpStatus httpStatus;
+        ValidationResult<User> validationResult = userService.createUserAccount(userDTO);
         if (validationResult.isSuccess()) {
             User user = validationResult.getValue().get();
             VerificationToken verificationToken = tokenService.createVerificationTokenForUser(user);
@@ -66,6 +66,11 @@ public class UserController {
             httpStatus = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(validationResult.getErrors(), httpStatus);
+    }
+
+    @GetMapping("/successRegistration")
+    public String successRegistration() {
+        return "successRegistration";
     }
 
     @GetMapping("/user/verifyEmail")
